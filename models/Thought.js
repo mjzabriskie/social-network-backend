@@ -1,6 +1,7 @@
 const { Schema, model, Types } = require("mongoose");
 const { format } = require("date-fns");
 
+//creating schema for reactions
 const ReactionSchema = new Schema(
   {
     reactionId: {
@@ -21,7 +22,7 @@ const ReactionSchema = new Schema(
     createdAt: {
       type: Date,
       default: Date.now,
-      get: (createdAtVal) => format(createdAtVal, "PPpp"),
+      get: (createdAtVal) => format(createdAtVal, "PPpp"),//Using date-fns to format
     },
   },
   {
@@ -32,18 +33,20 @@ const ReactionSchema = new Schema(
   }
 );
 
+// creating schema for thoughts
 const ThoughtSchema = new Schema(
   {
     thoughtText: {
       type: String,
       required: true,
       trim: true,
+      //no minLength because trim ensures no empty space, and then required gets set off if no characters
       maxLength: 280,
     },
     createdAt: {
       type: Date,
       default: Date.now,
-      get: (createdAtVal) => format(createdAtVal, "PPpp"),
+      get: (createdAtVal) => format(createdAtVal, "PPpp"),//Using date-fns to format
     },
     username: {
       type: String,
@@ -60,11 +63,12 @@ const ThoughtSchema = new Schema(
     id: false,
   }
 );
-
+// returns a virtual with the count of reactions on a thought
 ThoughtSchema.virtual("reactionCount").get(function () {
   return this.reactions.length;
 });
 
+// create the Thought model using the ThoughtSchema
 const Thought = model("Thought", ThoughtSchema);
 
 module.exports = Thought;

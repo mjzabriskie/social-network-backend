@@ -4,9 +4,9 @@ const thoughtController = {
   // get all thoughts
   getAllThought(req, res) {
     Thought.find({})
-      .populate({
+      .populate({//get and show the data associated with reactions
         path: "reactions",
-        select: "-__v",
+        select: "-__v",//removes from the result
       })
       .select("-__v")
       .sort({ _id: -1 })
@@ -18,7 +18,7 @@ const thoughtController = {
   // get single thought by id
   getSingleThought({ params }, res) {
     Thought.findOne({ _id: params.id })
-      .populate({
+      .populate({//get and show the data associated with reactions
         path: "reactions",
         select: "-__v",
       })

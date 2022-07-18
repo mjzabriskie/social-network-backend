@@ -5,6 +5,25 @@ const userController = {
   getAllUser(req, res) {
     User.find({})
       .populate({
+        //shows all data for each index in the array
+        path: "friends",
+        select: "-__v", //To omit this field from returned data
+      })
+      .populate({
+        path: "thoughts",
+        select: "-__v",
+      })
+      .select("-__v")
+      .then((dbUserData) => res.json(dbUserData))
+      .catch((err) => {
+        res.status(400).json(err);
+      });
+  },
+
+  //get single user
+  getUserById({ params }, res) {
+    User.findOne({ _id: params.id })
+      .populate({
         path: "friends",
         select: "-__v",
       })
@@ -12,20 +31,6 @@ const userController = {
         path: "thoughts",
         select: "-__v",
       })
-      .select("-__v")
-      //.sort({ _id: -1 })
-      .then((dbUserData) => res.json(dbUserData))
-      .catch((err) => {
-        console.log(err);
-        res.status(400).json(err);
-      });
-  },
-  getUserById({ params }, res) {
-    User.findOne({ _id: params.id })
-      //   .populate({
-      //     path: "comments",
-      //     select: "-__v",
-      //   })
       .select("-__v")
       .then((dbUserData) => {
         if (!dbUserData) {
@@ -35,7 +40,6 @@ const userController = {
         res.json(dbUserData);
       })
       .catch((err) => {
-        console.log(err);
         res.status(400).json(err);
       });
   },
@@ -71,8 +75,9 @@ const userController = {
           res.status(404).json({ message: "No user found with this id" });
           return;
         }
-        return Thought.deleteMany({ _id: { $in: dbUserData.thoughts } })
-        .then(dbUserData => res.json(dbUserData));
+        return Thought.deleteMany({ _id: { $in: dbUserData.thoughts } }).then(
+          (dbUserData) => res.json(dbUserData)
+        );
       })
       .catch((err) => res.status(400).json(err));
   },
