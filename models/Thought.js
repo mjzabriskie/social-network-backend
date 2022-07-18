@@ -1,4 +1,5 @@
 const { Schema, model, Types } = require("mongoose");
+const { format } = require("date-fns");
 
 const ReactionSchema = new Schema(
   {
@@ -8,24 +9,26 @@ const ReactionSchema = new Schema(
     },
     reactionBody: {
       type: String,
-      required: 'reactionBody must not be null',
+      required: "reactionBody must not be null",
       trim: true,
       maxLength: 280,
     },
     username: {
       type: String,
-      required: 'username must not be null',
-      trim: true
+      required: "username must not be null",
+      trim: true,
     },
     createdAt: {
       type: Date,
       default: Date.now,
+      get: (createdAtVal) => format(createdAtVal, "PPpp"),
     },
   },
   {
     toJSON: {
       getters: true,
     },
+    id: false,
   }
 );
 
@@ -35,17 +38,18 @@ const ThoughtSchema = new Schema(
       type: String,
       required: true,
       trim: true,
-      maxLength: 280
+      maxLength: 280,
     },
     createdAt: {
       type: Date,
       default: Date.now,
+      get: (createdAtVal) => format(createdAtVal, "PPpp"),
     },
     username: {
-        type: String,
-        required: true,
-        trim: true
-      },
+      type: String,
+      required: true,
+      trim: true,
+    },
     reactions: [ReactionSchema],
   },
   {
@@ -58,8 +62,8 @@ const ThoughtSchema = new Schema(
 );
 
 ThoughtSchema.virtual("reactionCount").get(function () {
-    return this.reactions.length;
-  });
+  return this.reactions.length;
+});
 
 const Thought = model("Thought", ThoughtSchema);
 
